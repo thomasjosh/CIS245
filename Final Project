@@ -1,0 +1,91 @@
+import requests #importing required data from website
+
+def fetch_data(zip=None, city=None): #function used to request weather data from website
+
+    baseUrl = "http://api.openweathermap.org/data/2.5/weather"
+
+    apiid = "4c8099661d772acd374fd07cd69d8e7f"
+
+    if zip is not None:
+
+        baseUrl += "?zip="+str(zip)+",us"
+
+    else:
+
+        baseUrl += "?q="+str(city)+",us"
+
+    baseUrl += "&appid="+str(apiid)
+
+    r = requests.get(baseUrl)
+
+    return r
+
+def showResult(resp): #function to display results
+
+    if resp.status_code == 200:
+
+        data= resp.json()
+
+        print(data['name'])
+
+        print(f"""{data['name']} Weather Forecast:
+
+        There will be {data['weather'][0]['description']} with wind speed of {data['wind']['speed']}.
+
+        Visibility will be {data['visibility']}.
+
+        Min. Temp in Kelvin will be {data['main']['temp_min']} and max temp in Kelvin will be {data['main']['temp_max']}.
+
+        """)
+
+    else: #notifying user of successful connection
+
+        print("Request Failed, Try Again Error Code : ",resp.status_code)
+
+def main(): #main function used
+
+    while True:
+
+        inp =int(input("Welcome! Here are your options :\n1. By Zip Code\n2. By City Name\n3. Exit\n"))
+
+        if inp == 1:
+
+            try: #try-except block
+
+                queryData=int(input("Enter zip code : "))
+
+                resp= fetch_data(queryData,None)
+
+                showResult(resp)
+
+            except Exception as ex:
+
+                print("Error : ",ex)
+
+        elif inp == 2:
+
+            try:
+
+                queryData = input("Enter city name : ")
+
+                resp= fetch_data(None,queryData)
+
+                showResult(resp)
+
+            except Exception as ex:
+
+                print("Error : ",ex)
+
+        elif inp==3:
+
+            break
+
+        else:
+
+            print("Invalid Choice..\n")
+
+
+
+if __name__=="__main__":
+
+    main()
